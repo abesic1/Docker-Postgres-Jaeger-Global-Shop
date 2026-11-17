@@ -1,6 +1,6 @@
 # Global shop: Users and Orders services
 
-Homework for [course name], done by [names]. Two small services for a global shop that run in docker compose, talk to each other, and show up in Jaeger.
+Homework for Distributed Software Systems, done by Alan. Two small services for a global shop that run in docker compose, talk to each other, and show up in Jaeger.
 
 ## What's in the repo
 
