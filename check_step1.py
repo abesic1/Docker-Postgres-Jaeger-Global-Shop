@@ -1,4 +1,3 @@
-"""Step 1 check: specs are valid OpenAPI, and each app serves the same paths and methods as its spec."""
 import sys, yaml
 from openapi_spec_validator import validate
 sys.path.insert(0, "users"); import importlib.util
