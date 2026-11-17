@@ -1,0 +1,14 @@
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# secrets / local settings
+.env
+.vscode/
+
+# zips and os junk
+*.zip
+.DS_Store
+Thumbs.db
