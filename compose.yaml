@@ -1,0 +1,79 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15673:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  users-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: users
+      POSTGRES_PASSWORD: users
+      POSTGRES_DB: users
+    volumes:
+      - users-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U users -d users"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  orders-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: orders
+      POSTGRES_PASSWORD: orders
+      POSTGRES_DB: orders
+      
+    volumes:
+      - orders-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orders -d orders"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  users:
+    build: ./users
+    environment:
+      DATABASE_URL: postgresql://users:users@users-db:5432/users
+      RABBITMQ_HOST: rabbitmq
+      OTLP_ENDPOINT: http://jaeger:4318/v1/traces
+    ports:
+      - "8001:8000"
+    depends_on:
+      users-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  orders:
+    build: ./orders
+    environment:
+      DATABASE_URL: postgresql://orders:orders@orders-db:5432/orders
+      USERS_URL: http://users:8000
+      RABBITMQ_HOST: rabbitmq
+      OTLP_ENDPOINT: http://jaeger:4318/v1/traces
+    ports:
+      - "8002:8000"
+    depends_on:
+      orders-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      users:
+        condition: service_started
+  jaeger:
+    image: jaegertracing/jaeger:2.9.0
+    ports:
+      - "16686:16686"   # the UI
+
+
+volumes:
+  users-data:
+  orders-data:

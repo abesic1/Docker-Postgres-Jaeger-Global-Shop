@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+httpx
+psycopg[binary]
+pika
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-psycopg
+opentelemetry-instrumentation-httpx
