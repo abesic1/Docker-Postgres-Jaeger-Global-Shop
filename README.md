@@ -12,7 +12,6 @@ Homework for Distributed Software Systems, done by Alan. Two small services for 
 
 Stack: Python, FastAPI, Postgres 16, RabbitMQ, OpenTelemetry, Jaeger.
 
-## What the teacher asked for, and where it is
 
 | Deliverable | Where |
 |---|---|
