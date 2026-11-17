@@ -12,13 +12,13 @@ Users has create, list, get and update. Orders has create and get. Each service 
 
 Orders asked Users about the user on every order (2 s timeout, 3 tries). I stopped Users and made an order. The log shows 3 failed tries, then a 503. It took about 12.7 s. I expected much less. Each failed try seems to take around 3.7 s, probably docker's name lookup for a stopped container (my guess, the log only says ConnectError).
 
-![Orders retrying 3 times and then answering 503](docs/step3-users-down.png)
+![Orders retrying 3 times and then answering 503](docs/users_service_failed.png)
 
 ## Step 4: local copy of the users
 
 Users now sends "user created/updated" events to RabbitMQ. Orders keeps its own users_copy table, fills it from a snapshot (GET /users) when it starts, and then updates it from the events. It makes its queue before loading the snapshot so no event gets lost. With Users stopped, an order took about 43 ms and answered 201 (measured with Measure-Command, so only the screenshot of the log is shown).
 
-![Orders loads the snapshot, gets an event and creates an order](docs/step4-projection.png)
+![Orders loads the snapshot, gets an event and creates an order](docs/users_service_created.png)
 
 The red PUT error in the screenshot is a call I sent to Users while it was still starting. It isn't part of the test.
 
@@ -37,9 +37,11 @@ I gained availability and speed and lost freshness. A gap I know about: if Users
 
 Both services send traces to Jaeger. HTTP and SQL are traced automatically, and for RabbitMQ I pass the trace id in the message headers by hand. One trace has 8 spans across 2 services: POST /users, the INSERT, "publish user event", then Orders' "process user event" and its INSERT.
 
-![One trace from users to orders in Jaeger](docs/step5-jaeger-trace.png)
+![One trace from users to orders in Jaeger](docs/jaeger_orders_users.png)
 
 ## Step 6: production
+
+### Discuss deployment, scaling and monitoring in production
 
 Deployment: build images in CI and run them on Kubernetes or a managed container service with rolling updates and health checks. Use managed Postgres and RabbitMQ, keep passwords in a secrets manager, and run table creation as a migration.
 
