@@ -39,4 +39,4 @@ To make a user (PowerShell):
 
     Invoke-RestMethod -Method Post -Uri http://localhost:8001/users -ContentType "application/json" -Body '{"name":"Ana","email":"ana@example.com","country":"IT"}'
 
-The passwords in compose.yaml (users:users, orders:orders) and RabbitMQ's default login are only for testing on my own computer. Don't use them for anything real.
+The passwords in compose.yaml (users:users, orders:orders) and RabbitMQ's default login are only for testing on my own computer.
